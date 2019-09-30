@@ -18,7 +18,6 @@ bool cor = false;
 int last = -1;
 int cnt = 0;
 bool nowWin = false;
-
 bool cor2 = false;
 bool nowWin2 = false;
 
@@ -175,14 +174,14 @@ void Number::refresh()
     if (correct == m_data)
     {
         ++cnt;
-        mes = "Верный ответ!\nЧисло ходов: " + QString::number(cnt);
-        giveup->setText("Новая Игра");
+        mes = "Right answer!\nNumber of moves: " + QString::number(cnt);
+        giveup->setText("Restart game");
         check->setEnabled(false);
         nowWin = true;
         bool ok;
         if (res_table.load(cnt))
         {
-            QString text = QInputDialog::getText(w, tr("Верный ответ!\n"), tr("Введите ваше имя:"), QLineEdit::Normal, QDir::home().dirName(), &ok);
+            QString text = QInputDialog::getText(w, tr("Right answer!\n"), tr("Enter your name:"), QLineEdit::Normal, QDir::home().dirName(), &ok);
             if (ok && !text.isEmpty())
             {
                 res_table.add(cnt, text);
@@ -198,11 +197,11 @@ void Number::refresh()
         QString b = QString::number(bulls);
         QString c = QString::number(cows);
         last = m_data;
-        mes = "Быков: " + b + "\n" + "Коров: " + c + "\n";
+        mes = "Bulls: " + b + "\n" + "Cows: " + c + "\n";
     }
     else
     {
-        mes = "Введенное число некорректно";
+        mes = "Incorrect number";
     }
     emit printMes(mes);
 }
@@ -212,13 +211,13 @@ void Number::newNum()
     QString mes = "";
     if (nowWin)
     {
-        giveup->setText("Сдаться");
+        giveup->setText("Give Up");
         check->setEnabled(true);
         nowWin = false;
     }
     else
     {
-        mes = "Загаданное число: " + QString::number(correct);
+        mes = "Right number: " + QString::number(correct);
     }
     emit printMes(mes);
     int newcorrect = 0;
@@ -307,15 +306,15 @@ int Key::cnt_cows(int a, int b)
 
 void Key :: newGame()
 {
-    answer->setText("Начать заново");
+    answer->setText("Restart game");
     nowWin = false;
 
 }
 
 void Key :: setNew()
 {
-    answer->setText("Ответить");
-    feedback->setText("Введите число быков и коров");
+    answer->setText("Reply");
+    feedback->setText("Enter the quantity bulls and cows");
     correct.clear();
     for (int i = 1000; i < 10000; ++i)
     {
@@ -341,20 +340,20 @@ void Key :: check()
     cur_bulls = correct_data(s2);
     if (cur_cows == -1 || cur_bulls == -1)
     {
-        feedback->setText("Некорректный ввод");
+        feedback->setText("Incorrect input");
         return;
     }
     else if (cur_cows + cur_bulls > 4)
     {
-        feedback->setText("Некорректный ввод");
+        feedback->setText("Incorrect input");
         return;
     }
     else
     {
-        feedback->setText("Введите число быков и коров");
+        feedback->setText("Enter the quantity bulls and cows");
         if (cur_bulls == 4)
         {
-            feedback->setText("Загаданное число: " + QString::number(cur));
+            feedback->setText("Your number: " + QString::number(cur));
             nowWin2 = true;
             newGame();
             return;
@@ -370,7 +369,7 @@ void Key :: check()
         }
         if (new_correct.empty())
         {
-            feedback->setText("Обман!");
+            feedback->setText("You lied!");
             nowWin2 = true;
             newGame();
             //restart
