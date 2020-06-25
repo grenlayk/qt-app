@@ -7,20 +7,19 @@
 #include <QFile>
 #include <QLineEdit>
 
-class Number : public QObject
-{
+class Number : public QObject {
     Q_OBJECT
 private:
-    int m_data;
-    int correct;
-    QPushButton* giveup;
-    QMainWindow* w;
-    QPushButton* check;
+    int32_t m_data;
+    int32_t correct;
+    QPushButton *giveup;
+    QMainWindow *w;
+    QPushButton *check;
 
 public:
     explicit Number(QObject *parent = 0);
-    Number(int data_, int correct_, QMainWindow* w_, QPushButton* giveup_, QPushButton*  check_)
-    {
+
+    Number(int32_t data_, int32_t correct_, QMainWindow *w_, QPushButton *giveup_, QPushButton *check_) {
         m_data = data_;
         correct = correct_;
         w = w_;
@@ -28,20 +27,33 @@ public:
         check = check_;
     }
 
-signals:
-    void valueChanged(int);
-    void valueChanged(QString);
-    void valueNew(int);
-    void printMes(QString);   
+    signals:
 
-public slots:
-    void setValue(int);
+    void valueChanged(int32_t);
+
+    void valueChanged(QString);
+
+    void valueNew(int32_t);
+
+    void printMes(QString);
+
+public
+    slots:
+
+    void setValue(int32_t);
+
     void setValue(QString);
+
     void refresh();
-    bool incorrect(int);
-    int cnt_cows(int, int);
-    int cnt_bulls(int, int);
+
+    bool incorrect(int32_t);
+
+    int32_t cnt_cows(int32_t, int32_t);
+
+    int32_t cnt_bulls(int32_t, int32_t);
+
     void newNum();
+
     void showTable();
 };
 
@@ -58,33 +70,30 @@ public slots:
 #include <QLabel>
 
 
-class Key :  public QObject
-{
+class Key : public QObject {
     Q_OBJECT
 private:
 
-    QPushButton * answer;
-    QLabel * feedback;
-    QLabel * guess;
-    QLineEdit * cows;
-    QLineEdit * bulls;
-    int cur;
-    int cur_bulls;
-    int cur_cows;
-    std :: set <int> correct;
+    QPushButton *answer;
+    QLabel *feedback;
+    QLabel *guess;
+    QLineEdit *cows;
+    QLineEdit *bulls;
+    int32_t cur;
+    int32_t cur_bulls;
+    int32_t cur_cows;
+    std::set<int32_t> correct;
 
-    bool incorrect(int num)
-    {
-        int cur = num;
-        int correct = cur;
-        std::vector<int> t(4);
-        for (int i = 0; i < 4; ++i)
-        {
+    bool incorrect(int32_t num) {
+        int32_t cur = num;
+        int32_t correct = cur;
+        std::vector<int32_t> t(4);
+        for (int32_t i = 0; i < 4; ++i) {
             t[i] = cur % 10;
             cur /= 10;
         }
         sort(t.begin(), t.end());
-        for (int i = 0; i < 3; ++i)
+        for (int32_t i = 0; i < 3; ++i)
             if (t[i] == t[i + 1])
                 return true;
         return false;
@@ -92,8 +101,8 @@ private:
 
 public:
     explicit Key(QObject *parent = 0);
-    Key(QLabel* fb, QLabel * sg, QLineEdit * sc, QLineEdit * sb, QPushButton * ans)
-    {
+
+    Key(QLabel *fb, QLabel *sg, QLineEdit *sc, QLineEdit *sb, QPushButton *ans) {
         feedback = fb;
         guess = sg;
         bulls = sb;
@@ -101,8 +110,7 @@ public:
         cur_bulls = 0;
         cur_cows = 0;
         answer = ans;
-        for (int i = 1000; i < 10000; ++i)
-        {
+        for (int32_t i = 1000; i < 10000; ++i) {
             if (!incorrect(i))
                 correct.insert(i);
         }
@@ -111,31 +119,30 @@ public:
         guess->setText(QString::number(cur));
     }
 
-signals:
-    void valueChanged(int);
+    signals:
+
+    void valueChanged(int32_t);
+
     void valueChanged(QString);
-    void valueNew(int);
+
+    void valueNew(int32_t);
+
     void printMes(QString);
 
-public slots:
+public
+    slots:
 
-    int correct_data(QString);
+    int32_t correct_data(QString);
+
     void check();
 
-    int cnt_cows(int, int);
-    int cnt_bulls(int, int);
+    int32_t cnt_cows(int32_t, int32_t);
+
+    int32_t cnt_bulls(int32_t, int32_t);
 
     void newGame();
 
     void setNew();
-    //void setBulls(int);
-    //void setBulls(QString);
-
-    /*void refresh();
-    bool incorrect(int);
-
-    int cnt_bulls(int, int);*/
-    //void newNum();
 };
 
 #endif // KEY_H
