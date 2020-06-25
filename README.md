@@ -1,3 +1,6 @@
+# Description
+Small project as a part of school homework. 
+
 # Start
 Open app and choose game mode. 
 1. "To reveal number": app defines the number you need to guess. 
