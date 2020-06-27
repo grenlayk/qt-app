@@ -1,6 +1,8 @@
 #ifndef NUMBER_H
 #define NUMBER_H
 
+#include "gennumber.h"
+
 #include <QObject>
 #include <QPushButton>
 #include <QMainWindow>
@@ -46,8 +48,6 @@ public
 
     void refresh();
 
-    bool incorrect(int32_t);
-
     int32_t cnt_cows(int32_t, int32_t);
 
     int32_t cnt_bulls(int32_t, int32_t);
@@ -83,21 +83,6 @@ private:
     int32_t cur_bulls;
     int32_t cur_cows;
     std::set<int32_t> correct;
-
-    bool incorrect(int32_t num) {
-        int32_t cur = num;
-        int32_t correct = cur;
-        std::vector<int32_t> t(4);
-        for (int32_t i = 0; i < 4; ++i) {
-            t[i] = cur % 10;
-            cur /= 10;
-        }
-        sort(t.begin(), t.end());
-        for (int32_t i = 0; i < 3; ++i)
-            if (t[i] == t[i + 1])
-                return true;
-        return false;
-    }
 
 public:
     explicit Key(QObject *parent = 0);

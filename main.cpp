@@ -17,52 +17,29 @@
 #include <QDir>
 
 #include "number.h"
-#include <time.h>
+#include "gennumber.h"
 #include <unistd.h>
-#include <vector>
 #include <string>
 #include <fstream>
-#include <iostream>
-#include <algorithm>
-
-const int32_t MOD = 1e4;
-const int32_t D = 1e3;
 
 
 using namespace std;
 
 
-bool incorrect(int32_t num) {
-    int32_t cur = num;
-    int32_t correct = cur;
-    std::vector<int32_t> t(4);
-    for (int i = 0; i < 4; ++i) {
-        t[i] = cur % 10;
-        cur /= 10;
-    }
-    if ((correct / 1000) == 0)
-        return true;
-    sort(t.begin(), t.end());
-    for (int32_t i = 0; i < 3; ++i)
-        if (t[i] == t[i + 1])
-            return true;
-    return false;
-}
-
-
 int main(int argc, char *argv[]) {
-    srand(time(0));
+
     QApplication a(argc, argv);
     QWidget *widget = new QWidget();
     widget->setGeometry(100, 0, 1200, 700);
 
     QStringList items;
     items << QInputDialog::tr("To reveal number") << QInputDialog::tr("To define number");
-    bool ok;
-    QString item = QInputDialog::getItem(widget, QInputDialog::tr(""), QInputDialog::tr("Game mode:"), items, 0, false,
-                                         &ok);
 
-    if (ok && !item.isEmpty() && item == QString::fromUtf8("To reveal number")) {
+    bool okClicked;
+    QString item = QInputDialog::getItem(widget, QInputDialog::tr(""), QInputDialog::tr("Game mode:"),
+                                         items, 0, false, &okClicked);
+
+    if (okClicked && !item.isEmpty() && item == QString::fromUtf8("To reveal number")) {
         QMainWindow w;
         w.resize(550, 150);
         w.setMinimumHeight(100);
@@ -83,13 +60,9 @@ int main(int argc, char *argv[]) {
         QLabel *out = new QLabel("", &w);
         out->setGeometry(10, 50, 200, 50);
 
-        int32_t correct = 0;
-        while (incorrect(correct)) {
-            correct = (unsigned) rand() % MOD;
-        }
-        cerr << correct << '\n';
-
+        int32_t correct = genNumber();
         Number *num = new Number(0, correct, &w, giveup, check);
+
         QObject::connect(check, SIGNAL(clicked()), num, SLOT(refresh()));
         QObject::connect(enter, SIGNAL(textChanged(QString)), num, SLOT(setValue(QString)));
         QObject::connect(num, SIGNAL(printMes(QString)), out, SLOT(setText(QString)));
@@ -98,7 +71,7 @@ int main(int argc, char *argv[]) {
 
         w.show();
         return a.exec();
-    } else if (ok && !item.isEmpty() && item == QString::fromUtf8("To define number")) {
+    } else if (okClicked && !item.isEmpty() && item == QString::fromUtf8("To define number")) {
         QMainWindow w;
         w.resize(550, 150);
 

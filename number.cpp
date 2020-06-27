@@ -12,7 +12,6 @@
 using namespace std;
 
 const int32_t D = 1e3;
-const int32_t MOD = 1e4;
 const int32_t INF = 1e9;
 bool cor = false;
 int32_t last = -1;
@@ -21,10 +20,10 @@ bool nowWin = false;
 bool cor2 = false;
 bool nowWin2 = false;
 
-struct Table {
 
+struct Table {
     string filename;
-    vector <pair<int32_t , string>> table;
+    vector <pair<int32_t, string>> table;
 
     bool load(int32_t cnt = INF) {
         ifstream fin(filename);
@@ -103,30 +102,12 @@ void Number::setValue(QString val) {
     bool ok;
     while (val.size() != 0 && val.back() == ' ')
         val.resize((int32_t ) val.size() - 1);
-    val_int32_t = val.toInt(&ok);
-    cor = (ok && val_int32_t / D != 0 && val_int32_t / MOD == 0) && !incorrect(val_int) && val_int32_t > 0 &&
+    val_int = val.toInt(&ok);
+    cor = (ok && val_int / D != 0 && val_int / MOD == 0) && !incorrect(val_int) && val_int > 0 &&
           ((int32_t ) val.size() == 4 || (int32_t ) val.size() == 5 && val[0] == '+');
     if (cor) {
         setValue(val_int);
     }
-}
-
-
-bool Number::incorrect(int32_t num) {
-    int32_t cur = num;
-    int32_t correct = cur;
-    std::vector<int32_t > t(4);
-    for (int32_t i = 0; i < 4; ++i) {
-        t[i] = cur % 10;
-        cur /= 10;
-    }
-    if ((correct / 1000) == 0)
-        return true;
-    sort(t.begin(), t.end());
-    for (int32_t i = 0; i < 3; ++i)
-        if (t[i] == t[i + 1])
-            return true;
-    return false;
 }
 
 
@@ -206,13 +187,9 @@ void Number::newNum() {
         mes = "Right number: " + QString::number(correct);
     }
     emit printMes(mes);
-    int32_t newcorrect = 0;
     last = -1;
     cnt = 0;
-    while (incorrect(newcorrect)) {
-        newcorrect = (unsigned) rand() % MOD;
-    }
-    correct = newcorrect;
+    correct = genNumber();
     std::cerr << correct << '\n';
 }
 
@@ -241,8 +218,8 @@ int32_t Key::correct_data(QString val) {
         val.resize((int) val.size() - 1);
     if (val.size() == 0)
         return 0;
-    val_int32_t = val.toInt(&ok);
-    cor2 = (ok && val_int32_t < 5 && val_int32_t >= 0);
+    val_int = val.toInt(&ok);
+    cor2 = (ok && val_int < 5 && val_int >= 0);
     if (cor2)
         return val_int;
     else
