@@ -6,11 +6,14 @@
 #include <vector>
 #include <time.h>
 #include <random>
+#include <fstream>
+#include <string>
 
 const int32_t SZ = 4;
 const int32_t MOD = 1e4;
+const int32_t INF = 1e9;
 
-bool incorrect(int32_t number);
+bool isIncorrect(int32_t number);
 
 int genNumber();
 

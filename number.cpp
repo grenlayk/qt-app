@@ -1,90 +1,21 @@
 #include "number.h"
-#include <iostream>
-#include <algorithm>
-#include <vector>
+
 #include <QVariant>
 #include <QInputDialog>
 #include <QDir>
 #include <QMessageBox>
-#include <string>
-#include <fstream>
 
-using namespace std;
 
 const int32_t D = 1e3;
-const int32_t INF = 1e9;
-bool cor = false;
 int32_t last = -1;
 int32_t cnt = 0;
+bool cor = false;
 bool nowWin = false;
 bool cor2 = false;
 bool nowWin2 = false;
 
 
-struct Table {
-    string filename;
-    vector <pair<int32_t, string>> table;
-
-    bool load(int32_t cnt = INF) {
-        ifstream fin(filename);
-        table.clear();
-        if (fin.fail()) {
-            return true;
-        }
-        string s;
-        while (getline(fin, s)) {
-            int32_t rating = 0;
-            int32_t pos = 0;
-            while (s[pos] != '|') {
-                rating = rating * 10 + (s[pos] - '0');
-                pos++;
-            }
-            string name = s.substr(pos + 1, s.size());
-            table.emplace_back(rating, name);
-        }
-        fin.close();
-        return table.size() < 5 || cnt < table.back().first;
-    }
-
-    Table(const string &name) {
-        filename = name;
-        load();
-    }
-
-    void save() {
-        ofstream fout(filename);
-        for (const auto &x : table) {
-            fout << x.first << "|" << x.second << '\n';
-        }
-        fout.close();
-    }
-
-
-    void add(int32_t pts, const QString &qs) {
-        string name = qs.toUtf8().constData();
-        if (table.size() < 5 || table.back().first > pts) {
-            if (table.size() == 5) {
-                table.pop_back();
-            }
-            table.emplace_back(pts, name);
-            sort(table.begin(), table.end());
-        }
-        save();
-    }
-
-
-    vector <pair<QString, int32_t >> get_results() {
-        load();
-        vector <pair<QString, int32_t >> res;
-        for (const auto &x : table) {
-            res.push_back(make_pair(QString::fromUtf8(x.second.c_str()), x.first));
-        }
-        return res;
-    }
-}
-
-
-res_table("table.txt");
+Table res_table("table.txt");
 
 
 void Number::setValue(int32_t val) {
@@ -101,10 +32,10 @@ void Number::setValue(QString val) {
     int32_t val_int;
     bool ok;
     while (val.size() != 0 && val.back() == ' ')
-        val.resize((int32_t ) val.size() - 1);
+        val.resize((int32_t) val.size() - 1);
     val_int = val.toInt(&ok);
-    cor = (ok && val_int / D != 0 && val_int / MOD == 0) && !incorrect(val_int) && val_int > 0 &&
-          ((int32_t ) val.size() == 4 || (int32_t ) val.size() == 5 && val[0] == '+');
+    cor = (ok && val_int / D != 0 && val_int / MOD == 0) && !isIncorrect(val_int) && val_int > 0 &&
+          ((int32_t) val.size() == 4 || (int32_t) val.size() == 5 && val[0] == '+');
     if (cor) {
         setValue(val_int);
     }
@@ -197,11 +128,11 @@ void Number::newNum() {
 void Number::showTable() {
     QMessageBox msgBox;
     QString mes;
-    vector <pair<QString, int32_t>> arr = res_table.get_results();
+    std::vector <std::pair<QString, int32_t>> arr = res_table.get_results();
     int32_t i = 1;
     mes += "Place. Name - Points\n";
-    for (pair<QString, int32_t> x : arr) {
-        string name = x.first.toUtf8().constData();
+    for (std::pair<QString, int32_t> x : arr) {
+        std::string name = x.first.toUtf8().constData();
         mes += QString::number(i) + ". " + x.first + " - " + QString::number(x.second) + "\n";
         ++i;
     }
@@ -272,7 +203,7 @@ void Key::setNew() {
     feedback->setText("Enter the quantity bulls and cows");
     correct.clear();
     for (int32_t i = 1000; i < 10000; ++i) {
-        if (!incorrect(i))
+        if (!isIncorrect(i))
             correct.insert(i);
     }
     cur = *correct.begin();

@@ -36,10 +36,10 @@ int main(int argc, char *argv[]) {
     items << QInputDialog::tr("To reveal number") << QInputDialog::tr("To define number");
 
     bool okClicked;
-    QString item = QInputDialog::getItem(widget, QInputDialog::tr(""), QInputDialog::tr("Game mode:"),
+    QString mode = QInputDialog::getItem(widget, QInputDialog::tr(""), QInputDialog::tr("Game mode:"),
                                          items, 0, false, &okClicked);
 
-    if (okClicked && !item.isEmpty() && item == QString::fromUtf8("To reveal number")) {
+    if (okClicked && !mode.isEmpty() && mode == QString::fromUtf8("To reveal number")) {
         QMainWindow w;
         w.resize(550, 150);
         w.setMinimumHeight(100);
@@ -71,7 +71,8 @@ int main(int argc, char *argv[]) {
 
         w.show();
         return a.exec();
-    } else if (okClicked && !item.isEmpty() && item == QString::fromUtf8("To define number")) {
+
+    } else if (okClicked && !mode.isEmpty() && mode == QString::fromUtf8("To define number")) {
         QMainWindow w;
         w.resize(550, 150);
 

@@ -2,12 +2,14 @@
 #define NUMBER_H
 
 #include "gennumber.h"
+#include "table.h"
 
 #include <QObject>
 #include <QPushButton>
 #include <QMainWindow>
 #include <QFile>
 #include <QLineEdit>
+
 
 class Number : public QObject {
     Q_OBJECT
@@ -96,7 +98,7 @@ public:
         cur_cows = 0;
         answer = ans;
         for (int32_t i = 1000; i < 10000; ++i) {
-            if (!incorrect(i))
+            if (!isIncorrect(i))
                 correct.insert(i);
         }
         cur = *correct.begin();
@@ -131,6 +133,3 @@ public
 };
 
 #endif // KEY_H
-
-
-
