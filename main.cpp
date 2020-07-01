@@ -1,29 +1,18 @@
 #include <QApplication>
-#include <QMainWindow>
 #include <QLabel>
-#include <QPushButton>
 #include <QSpinBox>
 #include <QSlider>
-#include <QLineEdit>
 #include <QLabel>
 #include <QDebug>
 #include <QTextCodec>
-#include <QMessageBox>
 #include <QInputDialog>
 #include <QtGui>
 #include <QStringList>
-#include <QVariant>
-#include <QInputDialog>
-#include <QDir>
+
 
 #include "number.h"
 #include "gennumber.h"
 #include <unistd.h>
-#include <string>
-#include <fstream>
-
-
-using namespace std;
 
 
 int main(int argc, char *argv[]) {

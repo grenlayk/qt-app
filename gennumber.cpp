@@ -1,11 +1,9 @@
 #include "gennumber.h"
 
-
 std::mt19937 mt_rand(time(0));
 
-
 bool isIncorrect(int32_t number) {
-    if (number < 1000)
+    if (number < BORD)
         return true;
 
     std::vector<int32_t> digits(SZ);

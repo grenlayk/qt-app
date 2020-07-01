@@ -1,15 +1,8 @@
 #include "number.h"
 
-#include <QVariant>
-#include <QInputDialog>
-#include <QDir>
-#include <QMessageBox>
-
-
-const int32_t D = 1e3;
 int32_t last = -1;
 int32_t cnt = 0;
-bool cor = false;
+bool isCorrect = false;
 bool nowWin = false;
 bool cor2 = false;
 bool nowWin2 = false;
@@ -18,8 +11,8 @@ bool nowWin2 = false;
 Table res_table("table.txt");
 
 
-void Number::setValue(int32_t val) {
-    m_data = val;
+void Number::setValue(int32_t input) {
+    m_data = input;
     std::cout << m_data << std::endl;
     QString S;
     S.setNum(m_data);
@@ -28,22 +21,22 @@ void Number::setValue(int32_t val) {
 }
 
 
-void Number::setValue(QString val) {
-    int32_t val_int;
-    bool ok;
-    while (val.size() != 0 && val.back() == ' ')
-        val.resize((int32_t) val.size() - 1);
-    val_int = val.toInt(&ok);
-    cor = (ok && val_int / D != 0 && val_int / MOD == 0) && !isIncorrect(val_int) && val_int > 0 &&
-          ((int32_t) val.size() == 4 || (int32_t) val.size() == 5 && val[0] == '+');
-    if (cor) {
-        setValue(val_int);
+void Number::setValue(QString input) {
+    int32_t intValue;
+    bool isInt;
+    while (input.size() != 0 && input.back() == ' ')
+        input.resize((int32_t)input.size() - 1);
+    intValue = input.toInt(&isInt);
+    isCorrect = (isInt && intValue > BORD && intValue < MOD) && !isIncorrect(intValue) &&
+          ((int32_t)input.size() == 4 || (int32_t)input.size() == 5 && input[0] == '+');
+    if (isCorrect) {
+        setValue(intValue);
     }
 }
 
 
-int32_t Number::cnt_cows(int32_t a, int32_t b) {
-    std::vector<int32_t > cnt(10);
+int32_t Number::cntCows(int32_t a, int32_t b) {
+    std::vector<int32_t> cnt(10);
     for (int32_t i = 0; i < 4; ++i) {
         if (b % 10 != a % 10) {
             int32_t nu = a % 10;
@@ -63,7 +56,7 @@ int32_t Number::cnt_cows(int32_t a, int32_t b) {
 }
 
 
-int32_t Number::cnt_bulls(int32_t a, int32_t b) {
+int32_t Number::cntBulls(int32_t a, int32_t b) {
     int32_t ans = 0;
     for (int32_t i = 0; i < 4; ++i) {
         if (b % 10 == a % 10) {
@@ -92,11 +85,11 @@ void Number::refresh() {
                 res_table.add(cnt, text);
             }
         }
-    } else if (cor) {
+    } else if (isCorrect) {
         if (last != m_data)
             ++cnt;
-        int32_t bulls = cnt_bulls(m_data, correct);
-        int32_t cows = cnt_cows(m_data, correct);
+        int32_t bulls = cntBulls(m_data, correct);
+        int32_t cows = cntCows(m_data, correct);
         QString b = QString::number(bulls);
         QString c = QString::number(cows);
         last = m_data;
@@ -158,7 +151,7 @@ int32_t Key::correct_data(QString val) {
 }
 
 
-int32_t Key::cnt_bulls(int32_t a, int32_t b) {
+int32_t Key::cntBulls(int32_t a, int32_t b) {
     int32_t ans = 0;
     for (int32_t i = 0; i < 4; ++i) {
         if (b % 10 == a % 10) {
@@ -171,7 +164,7 @@ int32_t Key::cnt_bulls(int32_t a, int32_t b) {
 }
 
 
-int32_t Key::cnt_cows(int32_t a, int32_t b) {
+int32_t Key::cntCows(int32_t a, int32_t b) {
     std::vector<int32_t> cnt(10);
     for (int32_t i = 0; i < 4; ++i) {
         if (b % 10 != a % 10) {
@@ -220,17 +213,17 @@ void Key::check() {
     }
     QString s1 = cows->text();
     QString s2 = bulls->text();
-    cur_cows = correct_data(s1);
-    cur_bulls = correct_data(s2);
-    if (cur_cows == -1 || cur_bulls == -1) {
+    curCows = correct_data(s1);
+    curBulls = correct_data(s2);
+    if (curCows == -1 || curBulls == -1) {
         feedback->setText("Incorrect input");
         return;
-    } else if (cur_cows + cur_bulls > 4) {
+    } else if (curCows + curBulls > 4) {
         feedback->setText("Incorrect input");
         return;
     } else {
         feedback->setText("Enter the quantity bulls and cows");
-        if (cur_bulls == 4) {
+        if (curBulls == 4) {
             feedback->setText("Your number: " + QString::number(cur));
             nowWin2 = true;
             newGame();
@@ -239,7 +232,7 @@ void Key::check() {
 
         std::set<int32_t> new_correct;
         for (auto x : correct) {
-            if (cnt_bulls(x, cur) == cur_bulls && cnt_cows(x, cur) == cur_cows) {
+            if (cntBulls(x, cur) == curBulls && cntCows(x, cur) == curCows) {
                 new_correct.insert(x);
             }
         }

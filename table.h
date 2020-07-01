@@ -1,8 +1,14 @@
 #ifndef TABLE_H
 #define TABLE_H
 
-#include "gennumber.h"
 #include <QString>
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <fstream>
+
+const int32_t INF = 1e9;
 
 class Table
 {

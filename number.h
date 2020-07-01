@@ -4,11 +4,15 @@
 #include "gennumber.h"
 #include "table.h"
 
-#include <QObject>
+#include <QInputDialog>
 #include <QPushButton>
 #include <QMainWindow>
-#include <QFile>
+#include <QMessageBox>
 #include <QLineEdit>
+#include <QVariant>
+#include <QObject>
+#include <QFile>
+#include <QDir>
 
 
 class Number : public QObject {
@@ -50,9 +54,9 @@ public
 
     void refresh();
 
-    int32_t cnt_cows(int32_t, int32_t);
+    int32_t cntCows(int32_t, int32_t);
 
-    int32_t cnt_bulls(int32_t, int32_t);
+    int32_t cntBulls(int32_t, int32_t);
 
     void newNum();
 
@@ -71,7 +75,6 @@ public
 #include <set>
 #include <QLabel>
 
-
 class Key : public QObject {
     Q_OBJECT
 private:
@@ -82,8 +85,8 @@ private:
     QLineEdit *cows;
     QLineEdit *bulls;
     int32_t cur;
-    int32_t cur_bulls;
-    int32_t cur_cows;
+    int32_t curBulls;
+    int32_t curCows;
     std::set<int32_t> correct;
 
 public:
@@ -94,8 +97,8 @@ public:
         guess = sg;
         bulls = sb;
         cows = sc;
-        cur_bulls = 0;
-        cur_cows = 0;
+        curBulls = 0;
+        curCows = 0;
         answer = ans;
         for (int32_t i = 1000; i < 10000; ++i) {
             if (!isIncorrect(i))
@@ -123,9 +126,9 @@ public
 
     void check();
 
-    int32_t cnt_cows(int32_t, int32_t);
+    int32_t cntCows(int32_t, int32_t);
 
-    int32_t cnt_bulls(int32_t, int32_t);
+    int32_t cntBulls(int32_t, int32_t);
 
     void newGame();
 

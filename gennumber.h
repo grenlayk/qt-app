@@ -1,6 +1,8 @@
 #ifndef GENNUMBER_H
 #define GENNUMBER_H
 
+#include "table.h"
+
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -11,7 +13,8 @@
 
 const int32_t SZ = 4;
 const int32_t MOD = 1e4;
-const int32_t INF = 1e9;
+const int32_t BORD = 1e3;
+
 
 bool isIncorrect(int32_t number);
 
