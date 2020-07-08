@@ -1,16 +1,13 @@
 #include <QApplication>
-#include <QLabel>
 #include <QSpinBox>
 #include <QSlider>
-#include <QLabel>
 #include <QDebug>
 #include <QTextCodec>
-#include <QInputDialog>
 #include <QtGui>
 #include <QStringList>
 
-
 #include "number.h"
+#include "key.h"
 #include "gennumber.h"
 #include <unistd.h>
 

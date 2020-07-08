@@ -1,11 +1,9 @@
 #include "number.h"
 
-int32_t last = -1;
-int32_t cnt = 0;
+int32_t lastInput = -1;
+int32_t moves = 0;
 bool isCorrect = false;
-bool nowWin = false;
-bool cor2 = false;
-bool nowWin2 = false;
+bool isVictory = false;
 
 
 Table res_table("table.txt");
@@ -13,106 +11,104 @@ Table res_table("table.txt");
 
 void Number::setValue(int32_t input) {
     m_data = input;
-    std::cout << m_data << std::endl;
-    QString S;
-    S.setNum(m_data);
+    std::cerr << m_data << std::endl;
+    QString newValue;
+    newValue.setNum(m_data);
     emit valueChanged(m_data);
-    emit valueChanged(S);
+    emit valueChanged(newValue);
 }
 
 
 void Number::setValue(QString input) {
     int32_t intValue;
     bool isInt;
-    while (input.size() != 0 && input.back() == ' ')
+    while (input.size() != 0 && input.back() == ' ') {
         input.resize((int32_t)input.size() - 1);
+    }
     intValue = input.toInt(&isInt);
     isCorrect = (isInt && intValue > BORD && intValue < MOD) && !isIncorrect(intValue) &&
-          ((int32_t)input.size() == 4 || (int32_t)input.size() == 5 && input[0] == '+');
+          ((int32_t)input.size() == SZ || ((int32_t)input.size() == SZ + 1 && input[0] == '+'));
     if (isCorrect) {
         setValue(intValue);
     }
 }
 
 
-int32_t Number::cntCows(int32_t a, int32_t b) {
-    std::vector<int32_t> cnt(10);
-    for (int32_t i = 0; i < 4; ++i) {
-        if (b % 10 != a % 10) {
-            int32_t nu = a % 10;
-            cnt[nu]++;
-            nu = b % 10;
-            cnt[nu]++;
+int32_t Number::cntCows(int32_t ourNumber, int32_t trueNumber) {
+    std::vector<int32_t> digitsCnt(10);
+    for (int32_t i = 0; i < SZ; ++i) {
+        if (trueNumber % 10 != ourNumber % 10) {
+            digitsCnt[ourNumber % 10]++;
+            digitsCnt[trueNumber % 10]++;
         }
-        a /= 10;
-        b /= 10;
+        ourNumber /= 10;
+        trueNumber /= 10;
     }
-    int32_t ans = 0;
+    int32_t cows = 0;
     for (int32_t i = 0; i < 10; ++i) {
-        if (cnt[i] > 1)
-            ans++;
+        if (digitsCnt[i] >= 2)
+            ++cows;
     }
-    return ans;
+    return cows;
 }
 
 
-int32_t Number::cntBulls(int32_t a, int32_t b) {
-    int32_t ans = 0;
-    for (int32_t i = 0; i < 4; ++i) {
-        if (b % 10 == a % 10) {
-            ans++;
+int32_t Number::cntBulls(int32_t ourNumber, int32_t trueNumber) {
+    int32_t bulls = 0;
+    for (int32_t i = 0; i < SZ; ++i) {
+        if (trueNumber % 10 == ourNumber % 10) {
+            ++bulls;
         }
-        a /= 10;
-        b /= 10;
+        ourNumber /= 10;
+        trueNumber /= 10;
     }
-    return ans;
+    return bulls;
 }
 
 
 void Number::refresh() {
-    QString mes;
+    QString message;
     if (correct == m_data) {
-        ++cnt;
-        mes = "Right answer!\nNumber of moves: " + QString::number(cnt);
+        ++moves;
+        message = "Right answer!\nNumber of moves: " + QString::number(moves);
         giveup->setText("Restart game");
         check->setEnabled(false);
-        nowWin = true;
-        bool ok;
-        if (res_table.load(cnt)) {
+        isVictory = true;
+        bool okClicked;
+        if (res_table.load(moves)) {
             QString text = QInputDialog::getText(w, tr("Right answer!\n"), tr("Enter your name:"), QLineEdit::Normal,
-                                                 QDir::home().dirName(), &ok);
-            if (ok && !text.isEmpty()) {
-                res_table.add(cnt, text);
+                                                 QDir::home().dirName(), &okClicked);
+            if (okClicked && !text.isEmpty()) {
+                res_table.add(moves, text);
             }
         }
     } else if (isCorrect) {
-        if (last != m_data)
-            ++cnt;
+        if (lastInput != m_data) {
+            ++moves;
+        }
         int32_t bulls = cntBulls(m_data, correct);
         int32_t cows = cntCows(m_data, correct);
-        QString b = QString::number(bulls);
-        QString c = QString::number(cows);
-        last = m_data;
-        mes = "Bulls: " + b + "\n" + "Cows: " + c + "\n";
+        lastInput = m_data;
+        message = "Bulls: " + QString::number(bulls) + "\n" + "Cows: " + QString::number(cows) + "\n";
     } else {
-        mes = "Incorrect number";
+        message = "Incorrect number";
     }
-    emit printMes(mes);
+    emit printMes(message);
 }
 
 
 void Number::newNum() {
-    QString mes = "";
-    if (nowWin) {
+    QString message = "";
+    if (isVictory) {
         giveup->setText("Give Up");
         check->setEnabled(true);
-        nowWin = false;
+        isVictory = false;
     } else {
-        mes = "Right number: " + QString::number(correct);
+        message = "Right number: " + QString::number(correct);
     }
-    emit printMes(mes);
-    last = -1;
-    cnt = 0;
+    emit printMes(message);
+    lastInput = -1;
+    moves = 0;
     correct = genNumber();
     std::cerr << correct << '\n';
 }
@@ -120,132 +116,16 @@ void Number::newNum() {
 
 void Number::showTable() {
     QMessageBox msgBox;
-    QString mes;
-    std::vector <std::pair<QString, int32_t>> arr = res_table.get_results();
-    int32_t i = 1;
-    mes += "Place. Name - Points\n";
-    for (std::pair<QString, int32_t> x : arr) {
-        std::string name = x.first.toUtf8().constData();
-        mes += QString::number(i) + ". " + x.first + " - " + QString::number(x.second) + "\n";
-        ++i;
+    QString message;
+    std::vector <std::pair<QString, int32_t>> scoreTable = res_table.get_results();
+    int32_t place = 1;
+    message += "Place. Name - Points\n";
+    for (std::pair<QString, int32_t> user : scoreTable) {
+        std::string name = user.first.toUtf8().constData();
+        message += QString::number(place) + ". " + user.first + " - " + QString::number(user.second) + "\n";
+        ++place;
     }
-    msgBox.setText(mes);
+    msgBox.setText(message);
     msgBox.exec();
 }
 
-
-int32_t Key::correct_data(QString val) {
-    int32_t val_int;
-    bool ok;
-
-    while (val.size() != 0 && val.back() == ' ')
-        val.resize((int) val.size() - 1);
-    if (val.size() == 0)
-        return 0;
-    val_int = val.toInt(&ok);
-    cor2 = (ok && val_int < 5 && val_int >= 0);
-    if (cor2)
-        return val_int;
-    else
-        return -1;
-}
-
-
-int32_t Key::cntBulls(int32_t a, int32_t b) {
-    int32_t ans = 0;
-    for (int32_t i = 0; i < 4; ++i) {
-        if (b % 10 == a % 10) {
-            ans++;
-        }
-        a /= 10;
-        b /= 10;
-    }
-    return ans;
-}
-
-
-int32_t Key::cntCows(int32_t a, int32_t b) {
-    std::vector<int32_t> cnt(10);
-    for (int32_t i = 0; i < 4; ++i) {
-        if (b % 10 != a % 10) {
-            int32_t nu = a % 10;
-            cnt[nu]++;
-            nu = b % 10;
-            cnt[nu]++;
-        }
-        a /= 10;
-        b /= 10;
-    }
-    int32_t ans = 0;
-    for (int32_t i = 0; i < 10; ++i) {
-        if (cnt[i] > 1)
-            ans++;
-    }
-    return ans;
-}
-
-
-void Key::newGame() {
-    answer->setText("Restart game");
-    nowWin = false;
-}
-
-
-void Key::setNew() {
-    answer->setText("Reply");
-    feedback->setText("Enter the quantity bulls and cows");
-    correct.clear();
-    for (int32_t i = 1000; i < 10000; ++i) {
-        if (!isIncorrect(i))
-            correct.insert(i);
-    }
-    cur = *correct.begin();
-    correct.erase(correct.begin());
-    guess->setText(QString::number(cur));
-}
-
-
-void Key::check() {
-    if (nowWin2) {
-        setNew();
-        nowWin2 = false;
-        return;
-    }
-    QString s1 = cows->text();
-    QString s2 = bulls->text();
-    curCows = correct_data(s1);
-    curBulls = correct_data(s2);
-    if (curCows == -1 || curBulls == -1) {
-        feedback->setText("Incorrect input");
-        return;
-    } else if (curCows + curBulls > 4) {
-        feedback->setText("Incorrect input");
-        return;
-    } else {
-        feedback->setText("Enter the quantity bulls and cows");
-        if (curBulls == 4) {
-            feedback->setText("Your number: " + QString::number(cur));
-            nowWin2 = true;
-            newGame();
-            return;
-        }
-
-        std::set<int32_t> new_correct;
-        for (auto x : correct) {
-            if (cntBulls(x, cur) == curBulls && cntCows(x, cur) == curCows) {
-                new_correct.insert(x);
-            }
-        }
-        if (new_correct.empty()) {
-            feedback->setText("You lied!");
-            nowWin2 = true;
-            newGame();
-            //restart
-        } else {
-            correct = new_correct;
-            cur = *correct.begin();
-            correct.erase(correct.begin());
-            guess->setText(QString::number(cur));
-        }
-    }
-}
